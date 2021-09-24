@@ -1,6 +1,3 @@
-//Get an array of pictures from app.js
-import { galleryItems } from './app.js';
-
 //Create links to the necessary elements
 const refs = {
     gallery: document.querySelector('.js-gallery'),
@@ -55,6 +52,7 @@ function openModal(e) {
     refs.lightboxImg.alt = e.alt;
     refs.btnClose.addEventListener('click', closeModal);
     refs.lightboxOverlay.addEventListener('click', closeModal);
+    window.addEventListener('keyup', arrowSсroll);
     window.addEventListener('keyup', onEscapePresed);
 };
 
@@ -62,7 +60,6 @@ function openModal(e) {
 function onEscapePresed(e) {
     if (e.key === 'Escape') {
         closeModal();
-        window.removeEventListener('keyup', onEscapePresed);
     }
 };
 
@@ -70,7 +67,36 @@ function onEscapePresed(e) {
 function closeModal() {
     refs.lightbox.classList.remove("is-open");
     refs.btnClose.removeEventListener("click", closeModal);
+    window.removeEventListener('keyup', arrowSсroll);
+    window.removeEventListener('keyup', onEscapePresed);
     refs.lightboxOverlay.removeEventListener("click", closeModal);
     refs.lightboxImg.src = "";
     refs.lightboxImg.alt = "";
+};
+
+//Scrolling pictures with arrows
+function arrowSсroll(e) {
+    const currentModalImgLink = refs.lightboxImg.src;
+    const currentModalImgIndex = galleryItems.findIndex(
+        item => item.original === currentModalImgLink);
+    let newModalImgIndex;
+
+    if (e.key === 'ArrowRight') {
+        if (currentModalImgIndex < galleryItems.length - 1) {
+            newModalImgIndex = currentModalImgIndex + 1;
+        } else {
+            newModalImgIndex = 0;
+        };
+    };
+    if (e.key === 'ArrowLeft') {
+        if (currentModalImgIndex > 0) {
+            newModalImgIndex = currentModalImgIndex - 1;
+        } else {
+            newModalImgIndex = galleryItems.length - 1;
+        };
+    };
+    if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+        refs.lightboxImg.src = galleryItems[newModalImgIndex].original;
+        refs.lightboxImg.alt = galleryItems[newModalImgIndex].description;
+    };
 };
